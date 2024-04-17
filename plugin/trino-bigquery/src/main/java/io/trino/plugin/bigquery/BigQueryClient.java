@@ -41,6 +41,7 @@ import io.airlift.units.Duration;
 import io.trino.cache.EvictableCacheBuilder;
 import io.trino.spi.TrinoException;
 import io.trino.spi.connector.ConnectorSession;
+import io.trino.spi.connector.RelationCommentMetadata;
 import io.trino.spi.connector.SchemaTableName;
 import io.trino.spi.connector.TableNotFoundException;
 
@@ -72,6 +73,7 @@ import static io.trino.plugin.bigquery.BigQueryErrorCode.BIGQUERY_LISTING_DATASE
 import static io.trino.plugin.bigquery.BigQueryErrorCode.BIGQUERY_LISTING_TABLE_ERROR;
 import static io.trino.plugin.bigquery.BigQuerySessionProperties.createDisposition;
 import static io.trino.plugin.bigquery.BigQuerySessionProperties.isQueryResultsCacheEnabled;
+import static io.trino.plugin.bigquery.BigQueryUtil.quote;
 import static java.lang.String.format;
 import static java.util.Locale.ENGLISH;
 import static java.util.Objects.requireNonNull;
@@ -395,6 +397,28 @@ public class BigQueryClient
         String remoteTableName = remoteTableId.getTable();
         remoteTableId = TableId.of(remoteTableId.getProject(), remoteSchemaName, remoteTableName);
         return format("%s.%s.%s", remoteTableId.getProject(), remoteTableId.getDataset(), remoteTableId.getTable());
+    }
+
+    public List<RelationCommentMetadata> listRelationCommentMetadata(ConnectorSession session, BigQueryClient client, String schemaName)
+    {
+        TableResult result = client.executeQuery(session, """
+                SELECT tbls.table_name, options.option_value
+                FROM %1$s.`INFORMATION_SCHEMA`.`TABLES` tbls
+                LEFT JOIN %1$s.`INFORMATION_SCHEMA`.`TABLE_OPTIONS` options
+                ON tbls.table_schema = options.table_schema AND tbls.table_name = options.table_name AND options.option_name = 'description'
+                """.formatted(quote(schemaName)));
+        return result.streamValues()
+                .map(row -> {
+                    Optional<String> comment = row.get(1).isNull() ? Optional.empty() : Optional.of(unquote(row.get(1).getStringValue()));
+                    return new RelationCommentMetadata(new SchemaTableName(schemaName, row.get(0).getStringValue()), false, comment);
+                })
+                .collect(toImmutableList());
+    }
+
+    private static String unquote(String quoted)
+    {
+        return quoted.substring(1, quoted.length() - 1)
+                .replace("\"\"", "\"");
     }
 
     public List<BigQueryColumnHandle> getColumns(BigQueryTableHandle tableHandle)

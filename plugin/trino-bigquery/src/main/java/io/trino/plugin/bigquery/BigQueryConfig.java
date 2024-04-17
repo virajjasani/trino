@@ -57,6 +57,8 @@ public class BigQueryConfig
     private Duration viewsCacheTtl = new Duration(15, MINUTES);
     private Duration serviceCacheTtl = new Duration(3, MINUTES);
     private Duration metadataCacheTtl = new Duration(0, MILLISECONDS);
+    @Deprecated
+    private boolean isLegacyMetadataListing;
     private boolean queryResultsCacheEnabled;
     private String queryLabelName;
     private String queryLabelFormat;
@@ -265,6 +267,19 @@ public class BigQueryConfig
     public BigQueryConfig setMetadataCacheTtl(Duration metadataCacheTtl)
     {
         this.metadataCacheTtl = metadataCacheTtl;
+        return this;
+    }
+
+    public boolean isLegacyMetadataListing()
+    {
+        return isLegacyMetadataListing;
+    }
+
+    @Config("bigquery.legacy-metadata-listing")
+    @ConfigDescription("Use BigQuery API to list metadata")
+    public BigQueryConfig setLegacyMetadataListing(boolean legacyMetadataListing)
+    {
+        isLegacyMetadataListing = legacyMetadataListing;
         return this;
     }
 
