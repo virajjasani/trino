@@ -26,7 +26,7 @@ public class TestBigQueryAvroTypeMapping
     {
         return BigQueryQueryRunner.createQueryRunner(
                 ImmutableMap.of(),
-                ImmutableMap.of("bigquery.skip-view-materialization", "true"),
+                ImmutableMap.of("bigquery.skip-view-materialization", "true", "bigquery.arrow-serialization.enabled", "false"),
                 ImmutableList.of());
     }
 }

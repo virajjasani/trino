@@ -39,7 +39,7 @@ public class TestBigQueryArrowSerialization
     {
         return BigQueryQueryRunner.createQueryRunner(
                 ImmutableMap.of(),
-                ImmutableMap.of("bigquery.arrow-serialization.enabled", "true"),
+                ImmutableMap.of(),
                 ImmutableList.of());
     }
 

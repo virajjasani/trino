@@ -97,9 +97,7 @@ This is a feature which introduces support for using Apache Arrow
 as the serialization format when reading from BigQuery.  Please note there are
 a few caveats:
 
-- Using Apache Arrow serialization is disabled by default. In order to enable
-  it, set the `bigquery.arrow-serialization.enabled`
-  configuration property to `true` and add
+- Using Apache Arrow serialization is enabled by default. Add
   `--add-opens=java.base/java.nio=ALL-UNNAMED` to the Trino
   {ref}`jvm-config`.
 
@@ -140,7 +138,7 @@ a few caveats:
 | `bigquery.credentials-file`                         | The path to the JSON credentials file                                                                                                                           | None. See the [requirements](bigquery-requirements) section. |
 | `bigquery.case-insensitive-name-matching`           | Match dataset and table names case-insensitively                                                                                                                | `false`                                              |
 | `bigquery.query-results-cache.enabled`              | Enable [query results cache](https://cloud.google.com/bigquery/docs/cached-results)                                                                             | `false`                                              |
-| `bigquery.arrow-serialization.enabled`              | Enable using Apache Arrow serialization when reading data from BigQuery. Please read this [section](bigquery-arrow-serialization-support) before enabling this feature. | `false`                                              |
+| `bigquery.arrow-serialization.enabled`              | Enable using Apache Arrow serialization when reading data from BigQuery. Please read this [section](bigquery-arrow-serialization-support) before using this feature. | `true`                                          |
 | `bigquery.rpc-proxy.enabled`                        | Use a proxy for communication with BigQuery.                                                                                                                    | `false`                                              |
 | `bigquery.rpc-proxy.uri`                            | Proxy URI to use if connecting through a proxy.                                                                                                                 |                                                      |
 | `bigquery.rpc-proxy.username`                       | Proxy user name to use if connecting through a proxy.                                                                                                           |                                                      |
